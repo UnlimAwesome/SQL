@@ -1,0 +1,66 @@
+CREATE DATABASE Hotel;
+Use Hotel;
+
+CREATE TABLE buildings
+(
+id int NOT NULL IDENTITY(1, 1),
+address varchar(30) NOT NULL,
+room_number int NOT NULL,
+PRIMARY KEY (id)
+);
+
+CREATE TABLE rooms
+(
+id int NOT NULL IDENTITY(1,1),
+build_id int NOT NULL,
+number int NOT NULL,
+floor int NOT NULL,
+status varchar(20) NOT NULL,
+FOREIGN KEY (build_id) REFERENCES buildings(id),
+PRIMARY KEY(id)
+);
+
+CREATE TABLE clients
+(
+id int NOT NULL IDENTITY(1,1),
+room_id int,
+name varchar(20) NOT NULL,
+surname varchar(20) NOT NULL,
+phone_num varchar(9) NOT NULL,
+passport_num varchar(16) NOT NULL,
+check_in datetime NOT NULL,
+check_out datetime,
+FOREIGN KEY(room_id) REFERENCES rooms(id),
+PRIMARY KEY(id)
+);
+
+CREATE TABLE staff
+(
+id int NOT NULL IDENTITY(1,1),
+name varchar(20) NOT NULL,
+surname varchar(20) NOT NULL,
+phone_num varchar(9) NOT NULL,
+passport_num varchar(16) NOT NULL,
+post varchar(20) NOT NULL,
+PRIMARY KEY(id)
+);
+
+CREATE TABLE tasks
+(
+id int NOT NULL IDENTITY(1,1),
+name varchar(40) NOT NULL,
+staff_id int,
+room_id int,
+status varchar(20) NOT NULL,
+FOREIGN KEY (staff_id) REFERENCES staff(id),
+FOREIGN KEY (room_id) REFERENCES rooms(id),
+PRIMARY KEY(id)
+);
+
+INSERT INTO buildings (address, room_number)
+VALUES
+('ул. Пушкинская, 6', '440'),
+('ул. Пушкинская, 8', '350'),
+('ул. Пушкинская, 10', '140');
+
+SELECT * FROM buildings;
