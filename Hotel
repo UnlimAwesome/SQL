@@ -1,6 +1,6 @@
 CREATE DATABASE Hotel;
 Use Hotel;
-
+SET DATEFORMAT YMD
 CREATE TABLE buildings
 (
 id int NOT NULL IDENTITY(1, 1),
@@ -15,7 +15,7 @@ id int NOT NULL IDENTITY(1,1),
 build_id int NOT NULL,
 number int NOT NULL,
 floor int NOT NULL,
-status varchar(20) NOT NULL,
+status varchar(20) DEFAULT 'свободна',
 FOREIGN KEY (build_id) REFERENCES buildings(id),
 PRIMARY KEY(id)
 );
@@ -24,12 +24,12 @@ CREATE TABLE clients
 (
 id int NOT NULL IDENTITY(1,1),
 room_id int,
-name varchar(20) NOT NULL,
+cl_name varchar(20) NOT NULL,
 surname varchar(20) NOT NULL,
-phone_num varchar(9) NOT NULL,
-passport_num varchar(16) NOT NULL,
-check_in datetime NOT NULL,
-check_out datetime,
+phone_num bigint NOT NULL,
+passport_num bigint NOT NULL,
+check_in datetime, -- date, time
+check_out datetime, -- date, time
 FOREIGN KEY(room_id) REFERENCES rooms(id),
 PRIMARY KEY(id)
 );
@@ -39,8 +39,8 @@ CREATE TABLE staff
 id int NOT NULL IDENTITY(1,1),
 name varchar(20) NOT NULL,
 surname varchar(20) NOT NULL,
-phone_num varchar(9) NOT NULL,
-passport_num varchar(16) NOT NULL,
+phone_num bigint NOT NULL,
+passport_num bigint NOT NULL,
 post varchar(20) NOT NULL,
 PRIMARY KEY(id)
 );
@@ -64,3 +64,32 @@ VALUES
 ('ул. Пушкинская, 10', '140');
 
 SELECT * FROM buildings;
+
+
+INSERT INTO rooms (build_id, number, floor)
+VALUES
+(1, 1, 1), (1, 2, 1), (1, 3, 1), (1, 4, 1), (1, 5, 1), (1, 6, 1),
+(2, 1, 1), (2, 2, 1), (2, 3, 1), (2, 4, 1), (2, 5, 1), (2, 6, 1)
+;
+
+SELECT * FROM rooms;
+
+
+
+INSERT INTO clients(room_id, cl_name, surname, phone_num, passport_num, check_in, check_out)
+VALUES
+(1, 'Георгий','Рязанцев',9110002311,4018656510, '2021-09-01 13:00:00', '2021-09-21 18:00:00'),
+(2, 'Георгий','Румянцев',9528522659,4016956013, '2021-09-25 11:00:00', '2021-10-13 16:00:00'),
+(3, 'Вячеслав','Красный',9529536789,3649568912, '2021-11-15 12:00:00', '2021-11-16 18:00:00'),
+(5, 'Антон','Крупицын',9110851125,2418657618, '2021-08-01 15:00:00', '2021-10-10 00:00:00');
+
+SELECT * FROM clients;
+
+INSERT INTO staff(name, surname, phone_num, passport_num, post)
+VALUES
+('Артемий','Иванов',8569856236,4016626796, 'Сантехник'),
+('Сергей','Кузнецов',9636589658,4056869610, 'Слесарь'),
+('Вячеслав','Егоров',9815752412,3717566895, 'Инженер'),
+('Антон','Грязнов',9119562338,1526383990, 'Главный инженер');
+
+SELECT * FROM staff;
