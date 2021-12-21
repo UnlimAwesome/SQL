@@ -1,6 +1,8 @@
 CREATE DATABASE Hotel;
 Use Hotel;
 SET DATEFORMAT YMD
+
+
 CREATE TABLE buildings
 (
 id int NOT NULL IDENTITY(1, 1),
@@ -23,14 +25,23 @@ PRIMARY KEY(id)
 CREATE TABLE clients
 (
 id int NOT NULL IDENTITY(1,1),
-room_id int,
 cl_name varchar(20) NOT NULL,
 surname varchar(20) NOT NULL,
 phone_num bigint NOT NULL,
 passport_num bigint NOT NULL,
+PRIMARY KEY(id)
+);
+
+CREATE TABLE staying
+(
+id int NOT NULL IDENTITY(1,1),
+room_id int NOT NULL,
+cl_id int NOT NULL,
 check_in datetime, -- date, time
 check_out datetime, -- date, time
+money int NOT NULL,
 FOREIGN KEY(room_id) REFERENCES rooms(id),
+FOREIGN KEY(cl_id) REFERENCES clients(id),
 PRIMARY KEY(id)
 );
 
@@ -45,24 +56,33 @@ post varchar(20) NOT NULL,
 PRIMARY KEY(id)
 );
 
-CREATE TABLE tasks
+CREATE TABLE missions
 (
 id int NOT NULL IDENTITY(1,1),
-name varchar(40) NOT NULL,
-staff_id int,
-room_id int,
+task_id int NOT NULL,
+staff_id int NOT NULL,
+room_id int NOT NULL,
+completed datetime, -- date, time
 status varchar(20) NOT NULL,
+FOREIGN KEY(task_id) REFERENCES tasks(id),
 FOREIGN KEY (staff_id) REFERENCES staff(id),
 FOREIGN KEY (room_id) REFERENCES rooms(id),
 PRIMARY KEY(id)
 );
+
+CREATE TABLE tasks
+(
+id int NOT NULL IDENTITY(1,1),
+name varchar(40) NOT NULL,
+PRIMARY KEY(id)
+);
+
 
 INSERT INTO buildings (address, room_number)
 VALUES
 ('ул. Пушкинская, 6', '440'),
 ('ул. Пушкинская, 8', '350'),
 ('ул. Пушкинская, 10', '140');
-
 SELECT * FROM buildings;
 
 
@@ -71,25 +91,44 @@ VALUES
 (1, 1, 1), (1, 2, 1), (1, 3, 1), (1, 4, 1), (1, 5, 1), (1, 6, 1),
 (2, 1, 1), (2, 2, 1), (2, 3, 1), (2, 4, 1), (2, 5, 1), (2, 6, 1)
 ;
-
 SELECT * FROM rooms;
 
 
 
-INSERT INTO clients(room_id, cl_name, surname, phone_num, passport_num, check_in, check_out)
+INSERT INTO clients(cl_name, surname, phone_num, passport_num)
 VALUES
-(1, 'Георгий','Рязанцев',9110002311,4018656510, '2021-09-01 13:00:00', '2021-09-21 18:00:00'),
-(2, 'Георгий','Румянцев',9528522659,4016956013, '2021-09-25 11:00:00', '2021-10-13 16:00:00'),
-(3, 'Вячеслав','Красный',9529536789,3649568912, '2021-11-15 12:00:00', '2021-11-16 18:00:00'),
-(5, 'Антон','Крупицын',9110851125,2418657618, '2021-08-01 15:00:00', '2021-10-10 00:00:00');
-
+('Георгий','Рязанцев',9110002311,4018656510),
+('Георгий','Румянцев',9528522659,4016956013),
+('Вячеслав','Красный',9529536789,3649568912),
+('Антон','Крупицын',9110851125,2418657618);
 SELECT * FROM clients;
+
+INSERT INTO staying(room_id, cl_id, check_in, check_out, money)
+VALUES
+(1,1,'2021-10-11 12:00','2021-10-16 18:00', 5000),
+(3,1,'2021-09-25 11:00', '2021-10-05 16:00', 10000),
+(2,2,'2021-11-15 12:00', '2021-11-16 18:00',1000),
+(5,4, '2021-08-01 15:00', '2021-08-10 00:00', 9000);
+SELECT * FROM staying;
 
 INSERT INTO staff(name, surname, phone_num, passport_num, post)
 VALUES
 ('Артемий','Иванов',8569856236,4016626796, 'Сантехник'),
-('Сергей','Кузнецов',9636589658,4056869610, 'Слесарь'),
+('Светлана','Кузнецова',9636589658,4056869610, 'Горничная'),
 ('Вячеслав','Егоров',9815752412,3717566895, 'Инженер'),
 ('Антон','Грязнов',9119562338,1526383990, 'Главный инженер');
-
 SELECT * FROM staff;
+
+INSERT INTO missions(task_id, staff_id, room_id, completed, status)
+VALUES
+(1,3,2,'2020-10-08 13:40', 'выполнена'),
+(3,2,3, '2021-11-16 14:00', 'выполнена');
+SELECT * FROM missions;
+
+INSERT INTO tasks(name)
+VALUES
+('Поменять лампочку'),
+('Сделать уборку'),
+('Поменять полотенце'),
+('Пополнить минибар');
+SELECT * FROM tasks;
