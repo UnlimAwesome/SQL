@@ -134,22 +134,27 @@ VALUES
 ('Пополнить минибар');
 SELECT * FROM tasks;
 
-SELECT buildings.address as address, AVG(sub_table.missions_sum) as avg_mis
+SELECT buildings.address, avg_mis
+FROM
+(SELECT buildings.id as sub_id, AVG(sub_table.missions_sum) as avg_mis
 FROM (SELECT rooms.id as room_id, COUNT(missions.id) as missions_sum
 FROM rooms 
 JOIN missions ON (rooms.id = missions.room_id)
 GROUP BY rooms.id) as sub_table
 JOIN rooms ON (rooms.id = sub_table.room_id)
 JOIN buildings ON (rooms.build_id = buildings.id)
-GROUP BY buildings.address
+GROUP BY buildings.id) as sub_table2
+JOIN buildings ON (buildings.id = sub_id)
 ORDER BY avg_mis DESC
-
 
 ALTER TABLE staying 
 ADD dtdiff AS DATEDIFF(day, staying.check_in, staying.check_out)
 
-SELECT clients.id, SUM(staying.dtdiff) as days_total
+SELECT clients.cl_name, clients.surname, days_total
+FROM
+(SELECT clients.id as sub_id, SUM(staying.dtdiff) as days_total
 FROM clients
 JOIN staying ON (staying.cl_id = clients.id)
-GROUP BY clients.id
+GROUP BY clients.id) as sub_table
+JOIN clients ON (clients.id = sub_id)
 ORDER BY days_total DESC
