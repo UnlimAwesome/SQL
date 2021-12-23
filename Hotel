@@ -56,6 +56,13 @@ post varchar(20) NOT NULL,
 PRIMARY KEY(id)
 );
 
+CREATE TABLE tasks
+(
+id int NOT NULL IDENTITY(1,1),
+name varchar(40) NOT NULL,
+PRIMARY KEY(id)
+);
+
 CREATE TABLE missions
 (
 id int NOT NULL IDENTITY(1,1),
@@ -69,14 +76,6 @@ FOREIGN KEY (staff_id) REFERENCES staff(id),
 FOREIGN KEY (room_id) REFERENCES rooms(id),
 PRIMARY KEY(id)
 );
-
-CREATE TABLE tasks
-(
-id int NOT NULL IDENTITY(1,1),
-name varchar(40) NOT NULL,
-PRIMARY KEY(id)
-);
-
 
 INSERT INTO buildings (address, room_number)
 VALUES
@@ -122,7 +121,9 @@ SELECT * FROM staff;
 INSERT INTO missions(task_id, staff_id, room_id, completed, status)
 VALUES
 (1,3,2,'2020-10-08 13:40', 'выполнена'),
-(3,2,3, '2021-11-16 14:00', 'выполнена');
+(3,2,3, '2021-11-16 14:00', 'выполнена'),
+(1,3,10,'2020-10-08 21:40', 'выполнена'),
+(3,2,10, '2021-11-16 14:00', 'выполнена');
 SELECT * FROM missions;
 
 INSERT INTO tasks(name)
@@ -132,3 +133,23 @@ VALUES
 ('Поменять полотенце'),
 ('Пополнить минибар');
 SELECT * FROM tasks;
+
+SELECT buildings.address as address, AVG(sub_table.missions_sum) as avg_mis
+FROM (SELECT rooms.id as room_id, COUNT(missions.id) as missions_sum
+FROM rooms 
+JOIN missions ON (rooms.id = missions.room_id)
+GROUP BY rooms.id) as sub_table
+JOIN rooms ON (rooms.id = sub_table.room_id)
+JOIN buildings ON (rooms.build_id = buildings.id)
+GROUP BY buildings.address
+ORDER BY avg_mis DESC
+
+
+ALTER TABLE staying 
+ADD dtdiff AS DATEDIFF(day, staying.check_in, staying.check_out)
+
+SELECT clients.id, SUM(staying.dtdiff) as days_total
+FROM clients
+JOIN staying ON (staying.cl_id = clients.id)
+GROUP BY clients.id
+ORDER BY days_total DESC
